@@ -1,0 +1,175 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>境界線表示システム</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript" src="jquery-ajaxQueue/dist/jquery.ajaxQueue.min.js"></script>
+    <script src='Wicket/wicket.js'></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script> -->
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+        integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+        crossorigin=""></script>
+    <script src="https://d3js.org/d3.v3.js"></script>
+    <script type="text/javascript" src="Leaflet.D3SvgOverlay/L.D3SvgOverlay.js"></script>
+    <script src="spin.min.js"></script>
+    <script src="Leaflet.Spin/leaflet.spin.js"></script>
+    <script src="./SmoothWheelZoom.js"></script>
+    <!-- <link rel="stylesheet" href="css/default.css" type="text/css">
+    <link rel="stylesheet" href="css/for_printer.css" media="print" type="text/css"> -->
+
+    <!-- <script src="content.js"></script>
+    <script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script> -->
+
+    <style type="text/css">
+        body {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        h1 {
+            color: #6594e0;
+            /*文字色*/
+            /*線の種類（点線）2px 線色*/
+            border-bottom: dashed 2px #6594e0;
+        }
+
+        /* .left {
+            float: left;
+        } */
+
+        .right {
+            float: left;
+        }
+
+        .map {
+            margin: 0 0 0 20;
+            float: left;
+            width: 70%;
+            height: 80%;
+        }
+
+        .print-off {
+            display: none;
+        }
+
+        @media print {
+            .map {
+                /* margin: 100 0 0 0; */
+                /* margin-left: auto;
+                margin-right: auto; */
+                width: 297mm;
+                height: 210mm;
+                /* position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0; */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h1>
+            境界線表示システム
+        </h1>
+    </div>
+    <script type="text/javascript" src="./data copy.js"></script>
+    <!-- <script src="content.js"></script>
+    <script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script> -->
+
+    <div>
+        <div class="application_area">
+        </div>
+
+        <div class="right">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">検索パネル</div>
+                <div class="panel-body">
+                    <table class="table">
+                        <tbody>
+                            <div id="Place">
+                                <div>
+                                    <label>場所検索</label>
+                                </div>
+                                <div class="text-left">
+                                    <div id="search" class="input-group">
+                                        <input id="addr" type="text" class="form-control" value="新潟県"
+                                            placeholder="住所・施設名など">
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="Opacity">
+                                <div>
+                                    <label>背景地図の透過率</label>
+                                </div>
+                                <td class="text-left">
+                                    <div class="input-group bootstrap-touchspin">
+                                        <span class="input-group-addon bootstrap-touchspin-prefix"
+                                            style="display: none;"></span>
+                                        <input id="opacity_input" type="text" value="50" name="opacity"
+                                            class="form-control" style="display: block;">
+                                        <span class="input-group-addon bootstrap-touchspin-postfix"
+                                            style="display: none;"></span>
+                                    </div>
+                                </td>
+                            </div>
+                            <tr>
+                                <td>
+                                    <label>線の太さ</label>
+                                </td>
+                                <td>
+                                    <select id="line_width">
+                                        <option value="1">1 mm</option>
+                                        <option value="1.5">1.5 mm</option>
+                                        <option value="2">2 mm</option>
+                                        <option value="2.5">2.5mm</option>
+                                        <option value="3">3 mm</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </tr>
+
+            <tr>
+                <div><input type="button" id="resetButton" value="リセット">
+                    <input type="button" id="serchButton" value="地図を表示（検索）">
+                </div>
+                <button class="print-btn">
+                    <span>地図だけを印刷する</span>
+                </button>
+
+        </div>
+        <!-- <div> -->
+        <div class="print-area">
+            <div id="view_map" class="map"></div>
+        </div>
+        <!-- </div> -->
+    </div>
+
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-45357765-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+    <!-- <script src="content.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script> -->
+</body>
+
+</html>
